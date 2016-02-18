@@ -1,6 +1,6 @@
 # Keypad Library data types
 KeyState	KEYWORD1
-Keypad	KEYWORD1
+Keypad_MCP23008	KEYWORD1
 KeypadEvent	KEYWORD1
 
 # Keypad Library constants
