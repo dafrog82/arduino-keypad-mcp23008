@@ -80,45 +80,47 @@
 || |
 || #
 */
-#include <Keypad.h>
+#include <Wire.h>
+#include <FabricaDigital_MCP23008.h>
+#include <Keypad_MCP23008.h>
 #include <ctype.h>
 
+const byte I2C_ADDRESS = 0x20;
 const byte ROWS = 4; //four rows
-const byte COLS = 3; //three columns
+const byte COLS = 4; //three columns
+
 // Define the keymaps.  The blank spot (lower left) is the space character.
 char alphaKeys[ROWS][COLS] = {
-    { 'a','d','g' },
-    { 'j','m','p' },
-    { 's','v','y' },
-    { ' ','.','#' }
+    { 'a','b','c','d' },
+    { 'e','f','g','h' },
+    { 'i','j','k','l' },
+    { ' ',',','.','#' }
 };
-
 char numberKeys[ROWS][COLS] = {
-    { '1','2','3' },
-    { '4','5','6' },
-    { '7','8','9' },
-    { ' ','0','#' }
+    { '1','2','3','A' },
+    { '4','5','6','B' },
+    { '7','8','9','C' },
+    { ' ','0','#','D' }
 };
 
-boolean alpha = false;   // Start with the numeric keypad.
-
-byte rowPins[ROWS] = {5, 4, 3, 2}; //connect to the row pinouts of the keypad
-byte colPins[COLS] = {8, 7, 6}; //connect to the column pinouts of the keypad
+byte rowPins[ROWS] = {7, 6, 5, 4}; //connect to the row pinouts of the keypad
+byte colPins[COLS] = {3, 2, 1, 0}; //connect to the column pinouts of the keypad
 
 // Create two new keypads, one is a number pad and the other is a letter pad.
-Keypad numpad( makeKeymap(numberKeys), rowPins, colPins, sizeof(rowPins), sizeof(colPins) );
-Keypad ltrpad( makeKeymap(alphaKeys), rowPins, colPins, sizeof(rowPins), sizeof(colPins) );
+Keypad_MCP23008 numpad = Keypad_MCP23008(rowPins, colPins, ROWS, COLS);
+Keypad_MCP23008 ltrpad = Keypad_MCP23008(rowPins, colPins, ROWS, COLS);
 
+boolean alpha = false;   // Start with the numeric keypad.
 
 unsigned long startTime;
 const byte ledPin = 13;                            // Use the LED on pin 13.
 
 void setup() {
+    numpad.begin(I2C_ADDRESS, makeKeymap(numberKeys));
+    numpad.begin(I2C_ADDRESS, makeKeymap(alphaKeys));
     Serial.begin(9600);
     pinMode(ledPin, OUTPUT);
     digitalWrite(ledPin, LOW);                 // Turns the LED on.
-    ltrpad.begin( makeKeymap(alphaKeys) );
-    numpad.begin( makeKeymap(numberKeys) );
     ltrpad.addEventListener(keypadEvent_ltr);  // Add an event listener.
     ltrpad.setHoldTime(500);                   // Default is 1000mS
     numpad.addEventListener(keypadEvent_num);  // Add an event listener.

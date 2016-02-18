@@ -30,27 +30,11 @@
 ||
 */
 
-#ifndef KEYPAD_H
-#define KEYPAD_H
+#ifndef KEYPAD_MCP23008_H
+#define KEYPAD_MCP23008_H
 
 #include "Key.h"
-
-// bperrybap - Thanks for a well reasoned argument and the following macro(s).
-// See http://arduino.cc/forum/index.php/topic,142041.msg1069480.html#msg1069480
-#ifndef INPUT_PULLUP
-#warning "Using  pinMode() INPUT_PULLUP AVR emulation"
-#define INPUT_PULLUP 0x2
-#define pinMode(_pin, _mode) _mypinMode(_pin, _mode)
-#define _mypinMode(_pin, _mode)  \
-do {							 \
-	if(_mode == INPUT_PULLUP)	 \
-		pinMode(_pin, INPUT);	 \
-		digitalWrite(_pin, 1);	 \
-	if(_mode != INPUT_PULLUP)	 \
-		pinMode(_pin, _mode);	 \
-}while(0)
-#endif
-
+#include "FabricaDigital_MCP23008.h"
 
 #define OPEN LOW
 #define CLOSED HIGH
@@ -72,14 +56,14 @@ typedef struct {
 
 
 //class Keypad : public Key, public HAL_obj {
-class Keypad : public Key {
+class Keypad_MCP23008 : public Key {
 public:
 
-	Keypad(char *userKeymap, byte *row, byte *col, byte numRows, byte numCols);
+	Keypad_MCP23008(byte *row, byte *col, byte numRows, byte numCols);
 
-	virtual void pin_mode(byte pinNum, byte mode) { pinMode(pinNum, mode); }
-	virtual void pin_write(byte pinNum, boolean level) { digitalWrite(pinNum, level); }
-	virtual int  pin_read(byte pinNum) { return digitalRead(pinNum); }
+	virtual void pin_mode(byte pinNum, byte mode) { mode == INPUT_PULLUP ? i2c.pullUp(pinNum, HIGH) : i2c.pinMode(pinNum, mode); }
+	virtual void pin_write(byte pinNum, boolean level) { i2c.digitalWrite(pinNum, level); }
+	virtual int  pin_read(byte pinNum) { return i2c.digitalRead(pinNum); }
 
 	uint bitMap[MAPSIZE];	// 10 row x 16 column array of bits. Except Due which has 32 columns.
 	Key key[LIST_MAX];
@@ -88,7 +72,7 @@ public:
 	char getKey();
 	bool getKeys();
 	KeyState getState();
-	void begin(char *userKeymap);
+	void begin(byte i2cAddr, char *userKeymap);
 	bool isPressed(char keyChar);
 	void setDebounceTime(uint);
 	void setHoldTime(uint);
@@ -100,6 +84,7 @@ public:
 	byte numKeys();
 
 private:
+	FabricaDigital_MCP23008 i2c;
 	unsigned long startTime;
 	char *keymap;
     byte *rowPins;
