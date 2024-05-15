@@ -38,7 +38,7 @@
 #define CLOSED HIGH
 
 typedef unsigned int uint;
-typedef enum{ IDLE, PRESSED, HOLD, RELEASED } KeyState;
+typedef enum{ KEY_IDLE, KEY_PRESSED, KEY_HOLD, KEY_RELEASED } KeyState;
 
 const char NO_KEY = '\0';
 
