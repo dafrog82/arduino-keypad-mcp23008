@@ -105,7 +105,7 @@ bool Keypad_MCP23008::updateList() {
 
 	// Delete any IDLE keys
 	for (byte i=0; i<LIST_MAX; i++) {
-		if (key[i].kstate==IDLE) {
+		if (key[i].kstate==KEY_IDLE) {
 			key[i].kchar = NO_KEY;
 			key[i].kcode = -1;
 			key[i].stateChanged = false;
@@ -152,23 +152,23 @@ void Keypad_MCP23008::nextKeyState(byte idx, boolean button) {
 	key[idx].stateChanged = false;
 
 	switch (key[idx].kstate) {
-		case IDLE:
+		case KEY_IDLE:
 			if (button==CLOSED) {
-				transitionTo (idx, PRESSED);
+				transitionTo (idx, KEY_PRESSED);
 				holdTimer = millis(); }		// Get ready for next HOLD state.
 			break;
-		case PRESSED:
+		case KEY_PRESSED:
 			if ((millis()-holdTimer)>holdTime)	// Waiting for a key HOLD...
-				transitionTo (idx, HOLD);
+				transitionTo (idx, KEY_HOLD);
 			else if (button==OPEN)				// or for a key to be RELEASED.
-				transitionTo (idx, RELEASED);
+				transitionTo (idx, KEY_RELEASED);
 			break;
-		case HOLD:
+		case KEY_HOLD:
 			if (button==OPEN)
-				transitionTo (idx, RELEASED);
+				transitionTo (idx, KEY_RELEASED);
 			break;
-		case RELEASED:
-			transitionTo (idx, IDLE);
+		case KEY_RELEASED:
+			transitionTo (idx, KEY_IDLE);
 			break;
 	}
 }
@@ -177,7 +177,7 @@ void Keypad_MCP23008::nextKeyState(byte idx, boolean button) {
 bool Keypad_MCP23008::isPressed(char keyChar) {
 	for (byte i=0; i<LIST_MAX; i++) {
 		if ( key[i].kchar == keyChar ) {
-			if ( (key[i].kstate == PRESSED) && key[i].stateChanged )
+			if ( (key[i].kstate == KEY_PRESSED) && key[i].stateChanged )
 				return true;
 		}
 	}
