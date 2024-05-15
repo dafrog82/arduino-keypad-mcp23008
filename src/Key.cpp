@@ -33,7 +33,7 @@
 // default constructor
 Key::Key() {
 	kchar = NO_KEY;
-	kstate = IDLE;
+	kstate = KEY_IDLE;
 	stateChanged = false;
 }
 
@@ -41,7 +41,7 @@ Key::Key() {
 Key::Key(char userKeyChar) {
 	kchar = userKeyChar;
 	kcode = -1;
-	kstate = IDLE;
+	kstate = KEY_IDLE;
 	stateChanged = false;
 }
 
