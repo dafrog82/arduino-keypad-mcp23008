@@ -56,7 +56,7 @@ void Keypad_MCP23008::begin(byte i2cAddr, char *userKeymap) {
 char Keypad_MCP23008::getKey() {
 	single_key = true;
 
-	if (getKeys() && key[0].stateChanged && (key[0].kstate==PRESSED))
+	if (getKeys() && key[0].stateChanged && (key[0].kstate==KEY_PRESSED))
 		return key[0].kchar;
 	
 	single_key = false;
@@ -129,7 +129,7 @@ bool Keypad_MCP23008::updateList() {
 					if (key[i].kchar==NO_KEY) {		// Find an empty slot or don't add key to list.
 						key[i].kchar = keyChar;
 						key[i].kcode = keyCode;
-						key[i].kstate = IDLE;		// Keys NOT on the list have an initial state of IDLE.
+						key[i].kstate = KEY_IDLE;		// Keys NOT on the list have an initial state of IDLE.
 						nextKeyState (i, button);
 						break;	// Don't fill all the empty slots with the same key.
 					}
